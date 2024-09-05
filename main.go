@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -24,6 +25,7 @@ func main() {
 	notifier.SetupLessonsReminders(groups[groupNumber])
 
 	// chillin
+	fmt.Println("Waiting...")
 	for {
 		time.Sleep(100 * time.Millisecond)
 	}
