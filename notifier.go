@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -46,6 +47,7 @@ func getMinutesLeftByLevel(level int) int {
 func formatLessonTemplateMessage(l Lesson, level int) string {
 	return fmt.Sprintf(template, strings.Repeat("❗", level), getMinutesLeftByLevel(level), l.Name)
 }
+
 func getDiffToNextFreeLesson(l Lesson) time.Duration {
 	now := carbon.Now()
 	nextDate, _ := carbon.Create(now.Year(), now.Month(), now.Day(), l.Start.Hour, l.Start.Minute, 0, 0, now.TimeZone())
@@ -55,9 +57,7 @@ func getDiffToNextFreeLesson(l Lesson) time.Duration {
 		nextDate.SetMinute(l.Start.Minute)
 	}
 
-	fmt.Println(nextDate, now)
 	diff := now.DiffInSeconds(nextDate, false)
-	fmt.Println(diff, now.TimeZone(), l.Name)
 	if diff < 0 {
 		nextDate = now.Next(time.Weekday(l.Day.num))
 		nextDate.SetHour(l.Start.Hour)
@@ -73,7 +73,7 @@ func setTimerByLevel(bot *TGBot, l Lesson, diff time.Duration, level int) {
 	}
 
 	time.AfterFunc(diff, func() {
-		fmt.Println("sending mess", level)
+		slog.Info("sending mess", slog.String("level", fmt.Sprintf("%v", level)))
 		bot.SendNotification(formatLessonTemplateMessage(l, level))
 	})
 }

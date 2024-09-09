@@ -11,7 +11,7 @@ type TGBot struct {
 }
 
 func CreateBot(key string) *TGBot {
-	bot, err := tgbotapi.NewBotAPI(botKey)
+	bot, err := tgbotapi.NewBotAPI(key)
 	if err != nil {
 		panic(err)
 	}
@@ -19,7 +19,7 @@ func CreateBot(key string) *TGBot {
 }
 
 func (b *TGBot) SendNotification(text string) {
-	msg := tgbotapi.NewMessage(channelChatId, text)
+	msg := tgbotapi.NewMessage(cfg.ChannelChatId, text)
 	if _, err := b.b.Send(msg); err != nil {
 		log.Fatal(err)
 	}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -63,7 +62,7 @@ func replaceBlankSymbols(text string) string {
 }
 
 func readCell(file *excelize.File, rowN int, colN int) string {
-	value, err := file.GetCellValue(studyType, clmconv.Itoa(colN)+strconv.Itoa(rowN+1))
+	value, err := file.GetCellValue(cfg.StudyType, clmconv.Itoa(colN)+strconv.Itoa(rowN+1))
 	if err != nil {
 		panic(err)
 	}
@@ -90,7 +89,7 @@ func ParseFile(name string) map[string]*Group {
 	}
 
 	// reading all rows from file
-	rows, err := file.GetRows(studyType)
+	rows, err := file.GetRows(cfg.StudyType)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -128,12 +127,6 @@ func ParseFile(name string) map[string]*Group {
 			}
 		}
 	}
-	// for _, v := range groups {
-	// 	fmt.Println(v)
-	// 	fmt.Println("---")
-	// }
-	// fmt.Printf("\n%+v", groups)
-	fmt.Println(groups["11-402"])
 	return groups
 
 }
