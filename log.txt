@@ -1,4 +1,2 @@
-time=2024-09-09T15:27:18.358+03:00 level=INFO msg="started ConsultationsReminder"
-time=2024-09-09T15:27:18.955+03:00 level=INFO msg=Waiting...
-time=2024-09-09T15:35:00.954+03:00 level=INFO msg="sending mess" level=2
-time=2024-09-09T15:45:00.955+03:00 level=INFO msg="sending mess" level=3
+time=2024-09-10T01:53:56.462+03:00 level=INFO msg="started ConsultationsReminder"
+time=2024-09-10T01:53:56.974+03:00 level=INFO msg=Waiting...
