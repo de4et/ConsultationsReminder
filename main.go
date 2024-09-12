@@ -32,7 +32,7 @@ func main() {
 	bot := CreateBot(cfg.BotKey)
 
 	// setting up reminders for specific group
-	notifier := CreateNotifier(withTGBot(bot))
+	notifier := CreateNotifier(bot)
 	notifier.SetupLessonsReminders(groups[cfg.GroupNumber])
 
 	// chillin
@@ -63,6 +63,9 @@ func setupLogger(env string) {
 		log = slog.New(
 			slog.NewTextHandler(createLogFile(logFilePath), &slog.HandlerOptions{Level: slog.LevelInfo}),
 		)
+	default:
+		panic(fmt.Errorf("There is no such an envType: %s", env))
+
 	}
 	slog.SetDefault(log)
 }

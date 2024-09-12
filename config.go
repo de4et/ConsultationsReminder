@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
@@ -18,7 +16,7 @@ type Config struct {
 func ReadConfig(path string) *Config {
 	var cfg Config
 	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
-		log.Fatalf("cannot read config(%s): %s", path, err)
+		panic(err)
 	}
 	return &cfg
 }

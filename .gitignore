@@ -2,11 +2,13 @@
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
 # Binaries for programs and plugins
+/bin
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+*.xlsx
 
 # Test binary, built with `go test -c`
 *.test
@@ -25,4 +27,3 @@ go.work.sum
 .env
 
 config.yml
-Расписание консультаций ИТИС КФУ с 01.09.2024 по 17.10.2024.xlsx

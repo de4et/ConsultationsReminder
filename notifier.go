@@ -9,8 +9,12 @@ import (
 	"github.com/uniplaces/carbon"
 )
 
+type NodificationSender interface {
+	SendNotification(text string) error
+}
+
 type Notifier struct {
-	bot *TGBot
+	ns NodificationSender
 }
 
 var levelConverter = map[int]int{
@@ -26,17 +30,16 @@ const template = `
 %s
 `
 
-func CreateNotifier(opts ...func(*Notifier)) *Notifier {
-	ntfr := &Notifier{}
-	for _, o := range opts {
-		o(ntfr)
+func CreateNotifier(ns NodificationSender) *Notifier {
+	ntfr := &Notifier{
+		ns: ns,
 	}
 	return ntfr
 }
 
 func (n *Notifier) SetupLessonsReminders(group *Group) {
 	for _, v := range group.Lessons {
-		setupLessonReminder(n.bot, v)
+		n.setupLessonReminder(v)
 	}
 }
 
@@ -67,26 +70,20 @@ func getDiffToNextFreeLesson(l Lesson) time.Duration {
 	return time.Duration(diff) * time.Second
 }
 
-func setTimerByLevel(bot *TGBot, l Lesson, diff time.Duration, level int) {
+func (n *Notifier) setTimerByLevel(l Lesson, diff time.Duration, level int) {
 	if diff < 0 {
 		return
 	}
 
 	time.AfterFunc(diff, func() {
 		slog.Info("sending mess", slog.String("level", fmt.Sprintf("%v", level)))
-		bot.SendNotification(formatLessonTemplateMessage(l, level))
+		n.ns.SendNotification(formatLessonTemplateMessage(l, level))
 	})
 }
 
-func setupLessonReminder(bot *TGBot, l Lesson) {
+func (n *Notifier) setupLessonReminder(l Lesson) {
 	diff := getDiffToNextFreeLesson(l)
-	setTimerByLevel(bot, l, diff-30*time.Minute, 1)
-	setTimerByLevel(bot, l, diff-15*time.Minute, 2)
-	setTimerByLevel(bot, l, diff-5*time.Minute, 3)
-}
-
-func withTGBot(bot *TGBot) func(*Notifier) {
-	return func(n *Notifier) {
-		n.bot = bot
-	}
+	n.setTimerByLevel(l, diff-30*time.Minute, 1)
+	n.setTimerByLevel(l, diff-15*time.Minute, 2)
+	n.setTimerByLevel(l, diff-5*time.Minute, 3)
 }

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -18,9 +16,10 @@ func CreateBot(key string) *TGBot {
 	return &TGBot{b: bot}
 }
 
-func (b *TGBot) SendNotification(text string) {
+func (b *TGBot) SendNotification(text string) error {
 	msg := tgbotapi.NewMessage(cfg.ChannelChatId, text)
 	if _, err := b.b.Send(msg); err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
