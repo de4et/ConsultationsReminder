@@ -11,6 +11,7 @@ type Config struct {
 	ChannelChatId int64  `yaml:"channelChatId"`
 	GroupNumber   string `yaml:"groupNumber"`
 	SchedulePath  string `yaml:"schedulePath"`
+	Weeks         int    `yaml:"weeks"`
 }
 
 func ReadConfig(path string) *Config {

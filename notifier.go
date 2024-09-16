@@ -37,9 +37,9 @@ func CreateNotifier(ns NodificationSender) *Notifier {
 	return ntfr
 }
 
-func (n *Notifier) SetupLessonsReminders(group *Group) {
+func (n *Notifier) SetupLessonsReminders(group *Group, weeks int) {
 	for _, v := range group.Lessons {
-		n.setupLessonReminder(v)
+		n.setupLessonReminders(v, weeks)
 	}
 }
 
@@ -51,8 +51,7 @@ func formatLessonTemplateMessage(l Lesson, level int) string {
 	return fmt.Sprintf(template, strings.Repeat("❗", level), getMinutesLeftByLevel(level), l.Name)
 }
 
-func getDiffToNextFreeLesson(l Lesson) time.Duration {
-	now := carbon.Now()
+func getDiffToNextFreeLesson(l Lesson, now *carbon.Carbon) time.Duration {
 	nextDate, _ := carbon.Create(now.Year(), now.Month(), now.Day(), l.Start.Hour, l.Start.Minute, 0, 0, now.TimeZone())
 	if now.Weekday() != time.Weekday(l.Day.num) {
 		nextDate = now.Next(time.Weekday(l.Day.num))
@@ -60,12 +59,13 @@ func getDiffToNextFreeLesson(l Lesson) time.Duration {
 		nextDate.SetMinute(l.Start.Minute)
 	}
 
-	diff := now.DiffInSeconds(nextDate, false)
+	nowNow := carbon.Now()
+	diff := nowNow.DiffInSeconds(nextDate, false)
 	if diff < 0 {
 		nextDate = now.Next(time.Weekday(l.Day.num))
 		nextDate.SetHour(l.Start.Hour)
 		nextDate.SetMinute(l.Start.Minute)
-		diff = now.DiffInSeconds(nextDate, false)
+		diff = nowNow.DiffInSeconds(nextDate, false)
 	}
 	return time.Duration(diff) * time.Second
 }
@@ -81,9 +81,12 @@ func (n *Notifier) setTimerByLevel(l Lesson, diff time.Duration, level int) {
 	})
 }
 
-func (n *Notifier) setupLessonReminder(l Lesson) {
-	diff := getDiffToNextFreeLesson(l)
-	n.setTimerByLevel(l, diff-30*time.Minute, 1)
-	n.setTimerByLevel(l, diff-15*time.Minute, 2)
-	n.setTimerByLevel(l, diff-5*time.Minute, 3)
+func (n *Notifier) setupLessonReminders(l Lesson, weeks int) {
+	now := carbon.Now()
+	for i := 0; i < weeks; i++ {
+		diff := getDiffToNextFreeLesson(l, now.AddWeeks(i))
+		n.setTimerByLevel(l, diff-30*time.Minute, 1)
+		n.setTimerByLevel(l, diff-15*time.Minute, 2)
+		n.setTimerByLevel(l, diff-5*time.Minute, 3)
+	}
 }
